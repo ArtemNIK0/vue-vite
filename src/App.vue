@@ -1,16 +1,22 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const showModal = ref(false);
+
+const scrollbarWidth = computed(() => {
+  return showModal.value ? (window.innerWidth - document.body.offsetWidth) + "px" : "0px";
+});
 
 const openModal = () => {
   showModal.value = true;
   document.body.style.overflow = "hidden";
+  document.body.style.paddingRight = scrollbarWidth.value;
 };
 
 const closeModal = () => {
   showModal.value = false;
   document.body.style.overflow = "auto";
+  document.body.style.paddingRight = scrollbarWidth.value;
 };
 </script>
 
