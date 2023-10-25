@@ -1,23 +1,42 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
-const showModal = ref(false);
+const store = useStore()
 
-const scrollbarWidth = computed(() => {
-  return showModal.value ? (window.innerWidth - document.body.offsetWidth) + "px" : "0px";
-});
+const bodyLock = (boolean) => {
+  let lockPaddingValue = `${window.innerWidth - document.body.offsetWidth}px`
+  
+  if(boolean !== store.state.bodyLocked) return
+
+  if(boolean) {
+    document.body.classList.remove('overflow-hidden')
+    document.body.classList.add('overflow-y-scroll')
+    document.body.style.setProperty('padding-right', 0)
+    store.commit('toggleBodyLock', false)
+    store.commit('setLockPaddingValue', 0)
+  } else {
+    document.body.classList.add('overflow-hidden')
+    document.body.classList.remove('overflow-y-scroll')
+    document.body.style.setProperty('padding-right', lockPaddingValue)
+    store.commit('toggleBodyLock', true)
+    store.commit('setLockPaddingValue', lockPaddingValue)
+  }
+}
+
+const showModal = computed(() => store.state.showModal)
+const scrollbarWidth = computed(() => store.state.scrollbarWidth)
+const isOpen = computed(() => store.state.showModal)
 
 const openModal = () => {
-  showModal.value = true;
-  document.body.style.overflow = "hidden";
-  document.body.style.paddingRight = scrollbarWidth.value;
-};
+  store.commit('toggleModal', true)
+  bodyLock(true)
+}
 
 const closeModal = () => {
-  showModal.value = false;
-  document.body.style.overflow = "auto";
-  document.body.style.paddingRight = scrollbarWidth.value;
-};
+  store.commit('toggleModal', false)
+  bodyLock(false)
+}
 </script>
 
 <template>
